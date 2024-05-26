@@ -29,6 +29,10 @@ test TEST:
 pre-commit:
     pre-commit run -a
 
+# run-clang-tidy auto fix
+fix TARGET:
+    run-clang-tidy {{TARGET}} -fix -p build -header-filter=tinyufo_cpp/
+
 # install(dry-run)
 dry-run:
     meson install -C build --no-rebuild --only-changed --dry-run
