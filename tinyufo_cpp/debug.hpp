@@ -2,7 +2,7 @@
 
 #include "log.hpp"
 
-static inline auto &debug_logger = print_hpp::log::console;
+static inline auto &debug_logger = tinyufo_cpp::log::console;
 
 #if !defined(NDEBUG)
 
