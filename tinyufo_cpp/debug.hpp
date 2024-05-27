@@ -33,10 +33,12 @@ static auto &debug_logger = tinyufo_cpp::log::console;
     #include <cassert>
     #define ASSERT(x) assert(x)
     #define ASSERT_MSG(x, msg) ASSERT((x) && (msg))
+    #define ASSERT_EQ(a, b) ASSERT((a) == (b))
 
 #else
 
     #define ASSERT(x)
     #define ASSERT_MSG(x, msg)
+    #define ASSERT_EQ(a, b)
 
 #endif
