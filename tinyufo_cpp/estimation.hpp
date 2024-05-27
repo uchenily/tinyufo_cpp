@@ -41,6 +41,35 @@ private:
                 std::max(depth, static_cast<size_t>(2))};
     }
 
+    auto incr(const std::string &key) -> std::uint8_t {
+        std::uint8_t min = UINT8_MAX;
+        for (size_t i = 0; i < hash_functions_.size(); i++) {
+            size_t hash = hash_functions_[i](key);
+            counters_[i][hash]++;
+            min = std::min(min, counters_[i][hash]);
+        }
+        return min;
+    }
+
+    // Get the estimated frequency of `key`.
+    auto get(const std::string &key) -> std::size_t {
+        std::uint8_t min = UINT8_MAX;
+        for (size_t i = 0; i < hash_functions_.size(); ++i) {
+            size_t hash = hash_functions_[i](key);
+            min = std::min(min, counters_[i][hash]);
+        }
+        return min;
+    }
+
+    // right shift all values inside this `Estimator`.
+    void age(std::uint8_t shift) {
+        for (auto &slot : counters_) {
+            for (auto &c : slot) {
+                c >>= shift;
+            }
+        }
+    }
+
 private:
     std::vector<HashFunc> hash_functions_;
     std::vector<Slot>     counters_;
