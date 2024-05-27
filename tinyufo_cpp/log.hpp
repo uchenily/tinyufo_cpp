@@ -247,5 +247,5 @@ namespace detail {
 
 } // namespace detail
 
-static inline auto console = detail::ConsoleLogger();
+static auto console = detail::ConsoleLogger();
 } // namespace tinyufo_cpp::log
