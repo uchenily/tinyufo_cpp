@@ -10,6 +10,7 @@ Checks: |
   readability-*,
   google-*,
   llvm-*,
+  -bugprone-easily-swappable-parameters,
   -cppcoreguidelines-avoid-do-while,
   -cppcoreguidelines-avoid-magic-numbers,
   -cppcoreguidelines-avoid-reference-coroutine-parameters,
