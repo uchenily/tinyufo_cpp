@@ -19,11 +19,10 @@ private:
         std::mt19937_64                         engine(std::random_device{}());
         std::uniform_int_distribution<uint64_t> distribution;
         for (auto i = 0u; i < hashes; i++) {
+            uint64_t a = distribution(engine);
+            uint64_t b = distribution(engine);
             hash_functions_.emplace_back(
-                [engine, distribution, slots](
-                    const auto &key) mutable -> uint64_t {
-                    uint64_t a = distribution(engine);
-                    uint64_t b = distribution(engine);
+                [a, b, slots](const auto &key) -> uint64_t {
                     uint64_t hash = 0;
                     for (size_t i = 0; i < key.length(); i++) {
                         hash = (hash * a + key[i]) * b + hash;
@@ -86,4 +85,31 @@ public:
 private:
     std::vector<HashFunc> hash_functions_;
     std::vector<Slot>     counters_;
+};
+
+class TinyLfu {
+public:
+    // because we use 8-bits counters, window size can be 256 * the cache size
+    TinyLfu(std::size_t cache_size)
+        : estimator_{Estimator::create(cache_size)}
+        // 8x: just a heuristic to balance the memory usage and accuracy
+        , window_limit_{cache_size * 8} {}
+
+    auto get(const std::string &key) -> uint8_t {
+        return estimator_.get(key);
+    }
+
+    auto incr(const std::string &key) -> uint8_t {
+        auto window_size = window_counter_++;
+        if (window_size == window_limit_ || window_size > window_limit_ * 2) {
+            window_counter_ = 0;
+            estimator_.age(1);
+        }
+        return estimator_.incr(key);
+    }
+
+private:
+    Estimator   estimator_;
+    std::size_t window_counter_{0};
+    std::size_t window_limit_;
 };
